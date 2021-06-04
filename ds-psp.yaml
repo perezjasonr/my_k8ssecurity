@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-psp
+  namespace: psp-test
+  labels:
+    security: psp
+spec:
+  selector:
+    matchLabels:
+      security: psp
+  template:
+    metadata:
+      labels:
+        security: psp
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+#        capabilities:
+#          drop: ["ALL"]
+      containers:
+      - name: alpine-psp
+        image: alpine:latest
+        command: ["sleep", "3600"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+#      volumes:
+#      - name: volumeattempt
+#        hostPath:
+#          path: /data
+#      - name: profiles
+#        hostPath:
+#          path: /home/ec2-user

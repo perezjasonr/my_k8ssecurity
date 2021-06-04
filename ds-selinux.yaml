@@ -1,0 +1,46 @@
+#TODO needs port
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-selinux
+  namespace: selinux
+  labels:
+    security: selinux
+spec:
+  selector:
+    matchLabels:
+      security: selinux
+  template:
+    metadata:
+      labels:
+        security: selinux
+    spec:
+      serviceAccountName: selinux-sa
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+        seLinuxOptions:
+          level: "s0"
+          role: "object_r"
+          type: insert type here""
+          user: "system_u"
+#        capabilities:
+#          drop: ["ALL"]
+      containers:
+      - name: alpine-selinux
+        image: alpine:latest
+        command: ["sleep", "3600"]
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: volumeattempt
+          mountPath: /selinux/demo
+        - name: failvolumeattempt
+          mountPath: /selinux/fail
+      volumes:
+      - name: volumeattempt
+        hostPath:
+          path: /var/local
+      - name: failvolumeattempt
+        hostPath:
+          path: /home/ec2-user
